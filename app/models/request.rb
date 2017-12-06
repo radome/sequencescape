@@ -36,7 +36,8 @@ class Request < ApplicationRecord
   self.customer_request = false
 
   # Associations
-  has_many_events
+  # has_many_events
+  has_many :events, as: :eventful, dependent: :destroy, class_name: "::Event"
   has_many_lab_events
 
   belongs_to :pipeline
@@ -62,7 +63,7 @@ class Request < ApplicationRecord
   has_many :qc_metric_requests
   has_many :qc_metrics, through: :qc_metric_requests
 
-  has_many :request_events, ->() { order(:current_from) }, inverse_of: :request do
+  has_many :request_events, ->() { order(:current_from) }, inverse_of: :request, class_name: "Request::Event" do
     def date_for_state(state)
       # Annoyingly we get a new scope generated within the class method
       # so can't actually check if we have the events loaded. This optimization

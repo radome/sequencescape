@@ -1,15 +1,15 @@
 require 'rails_helper'
 
-describe RequestEvent do
+describe "Request::Event" do
   context 'Customer Requests' do
     let!(:request) { create :customer_request, asset: create(:well), target_asset: create(:well) }
 
     context 'creating requests' do
-      it 'should record a RequestEvent' do
-        expect(RequestEvent.count).to eq 1
+      it 'should record a Request::Event' do
+        expect(Request::Event.count).to eq 1
       end
 
-      it 'should record a RequestEvent for each new Request' do
+      it 'should record a Request::Event for each new Request' do
         expect(request.request_events.count).to eq 1
         expect(request.current_request_event.from_state).to be_nil
         expect(request.current_request_event.to_state).to eq 'pending'
@@ -23,16 +23,16 @@ describe RequestEvent do
         request.start!
       end
 
-      it 'should record new state change RequestEvents for each request' do
-        expect(RequestEvent.count).to eq 2
+      it 'should record new state change Request::Events for each request' do
+        expect(Request::Event.count).to eq 2
       end
 
-      it 'should record a new state change RequestEvent from "pending"' do
+      it 'should record a new state change Request::Event from "pending"' do
         event = request.current_request_event
         expect(event.from_state).to eq 'pending'
       end
 
-      it 'should record a new state change RequestEvent to "started"' do
+      it 'should record a new state change Request::Event to "started"' do
         event = request.current_request_event
         expect(event.to_state).to eq 'started'
       end
@@ -49,10 +49,10 @@ describe RequestEvent do
       before(:each) do
         @old_request_id = request.id
         request.destroy
-        @destroyed_ids = RequestEvent.where(event_name: 'destroyed').pluck(:request_id)
+        @destroyed_ids = Request::Event.where(event_name: 'destroyed').pluck(:request_id)
       end
 
-      it 'should record a destroy RequestEvent for each request' do
+      it 'should record a destroy Request::Event for each request' do
         expect(@destroyed_ids).to eq [@old_request_id]
       end
     end
@@ -62,11 +62,11 @@ describe RequestEvent do
     let!(:request) { create :transfer_request }
 
     context 'creating requests' do
-      it 'should not record a RequestEvent' do
-        expect(RequestEvent.count).to eq 0
+      it 'should not record a Request::Event' do
+        expect(Request::Event.count).to eq 0
       end
 
-      it 'should not record a RequestEvent for each new Request' do
+      it 'should not record a Request::Event for each new Request' do
         expect(request.request_events.count).to eq 0
       end
     end
@@ -75,8 +75,8 @@ describe RequestEvent do
       before(:each) do
         request.start!
       end
-      it 'should not record new state change RequestEvents for each request' do
-        expect(RequestEvent.count).to eq 0
+      it 'should not record new state change Request::Events for each request' do
+        expect(Request::Event.count).to eq 0
       end
     end
 
@@ -84,10 +84,10 @@ describe RequestEvent do
       before(:each) do
         @old_request_id = request.id
         request.destroy
-        @destroyed_ids = RequestEvent.where(event_name: 'destroyed').pluck(:request_id)
+        @destroyed_ids = Request::Event.where(event_name: 'destroyed').pluck(:request_id)
       end
 
-      it 'should not record a destroy RequestEvent for each request' do
+      it 'should not record a destroy Request::Event for each request' do
         expect(@destroyed_ids).to eq []
       end
     end
@@ -100,7 +100,7 @@ describe RequestEvent do
       passed = Time.local(2009, 9, 1, 12, 0, 0)
       event2 = create :request_event, to_state: 'passed', current_from: passed
       event3 = create :request_event, to_state: 'later_state'
-      expect(RequestEvent.date_for_state('passed').strftime('%Y%m%d')).to eq '20090901'
+      expect(Request::Event.date_for_state('passed').strftime('%Y%m%d')).to eq '20090901'
     end
 
     let(:request) { create :customer_request }

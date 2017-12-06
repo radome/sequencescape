@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :request_event do
+  factory :request_event, class: "Request::Event" do
     request
     event_name 'state_changed'
     from_state 'first_state'

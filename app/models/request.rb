@@ -38,7 +38,8 @@ class Request < ApplicationRecord
   # Associations
   # has_many_events
   has_many :events, as: :eventful, dependent: :destroy, class_name: "::Event"
-  has_many_lab_events
+  # has_many_lab_events
+  has_many :lab_events, as: :eventful, dependent: :destroy
 
   belongs_to :pipeline
   belongs_to :item

@@ -3,7 +3,6 @@
 # Please refer to the LICENSE and README files for information on licensing and
 # authorship of this file.
 # Copyright (C) 2013,2015 Genome Research Ltd.
-
 class RequestEvent < ApplicationRecord
   belongs_to :request, inverse_of: :request_events
 

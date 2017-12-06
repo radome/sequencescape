@@ -7,18 +7,11 @@
 class Plate::Creator < ApplicationRecord
   PlateCreationError = Class.new(StandardError)
 
-  class PurposeRelationship < ApplicationRecord
-    self.table_name = ('plate_creator_purposes')
+  # class ParentPurposeRelationship < ApplicationRecord
+  #   self.table_name = ('plate_creator_parent_purposes')
 
-    belongs_to :plate_purpose
-    belongs_to :plate_creator, class_name: 'Plate::Creator'
-  end
-
-  class ParentPurposeRelationship < ApplicationRecord
-    self.table_name = ('plate_creator_parent_purposes')
-
-    belongs_to :plate_purpose, class_name: 'Purpose'
-  end
+  #   belongs_to :plate_purpose, class_name: 'Purpose'
+  # end
 
   self.table_name = 'plate_creators'
 

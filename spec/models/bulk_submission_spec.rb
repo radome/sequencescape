@@ -46,7 +46,11 @@ describe BulkSubmission, with: :uploader do
              name: 'pcr_cycle_test',
              request_types: [request_type]
     end
-    let(:request_type) { create(:library_request_type) }
+    let(:request_type) do
+      create(:library_request_type).tap do |rt|
+        rt.library_types << create(:library_type, name: 'Standard')
+      end
+    end
 
     let(:expected_request_options) do
       {

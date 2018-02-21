@@ -79,7 +79,10 @@ FactoryGirl.define do
     association(:asset, factory: :well)
     association(:request_type, factory: :library_request_type)
     request_purpose
-    request_metadata_attributes { attributes_for :request_metadata_for_library_manufacture }
+    request_metadata_attributes do
+      attributes_for(:request_metadata_for_library_manufacture)
+        .merge(library_type: request_type.library_types.first&.name)
+    end
   end
 
   factory(:multiplex_request, class: Request::Multiplexing) do

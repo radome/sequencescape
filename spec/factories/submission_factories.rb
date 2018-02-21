@@ -38,20 +38,26 @@ FactoryGirl.define do
   end
 
   factory :order do
+    transient do
+      request_types_list { create_list(:request_type, 1) }
+    end
     study
     project
     user
     item_options          {}
     request_options       {}
     assets                { create_list(:sample_tube, 1) }
-    request_types         { [create(:request_type).id] }
+    request_types         { request_types_list.map { |rt| rt.id } }
 
     factory :order_with_submission do
       after(:build) { |o| o.create_submission(user_id: o.user_id) }
     end
 
     factory :library_order do
-      request_options { { fragment_size_required_from: 100, fragment_size_required_to: 200, library_type: 'Standard' } }
+      transient do
+        library_type { request_types_list.first.library_types.first.name }
+      end
+      request_options { { fragment_size_required_from: 100, fragment_size_required_to: 200, library_type: library_type } }
     end
   end
 
@@ -66,7 +72,7 @@ FactoryGirl.define do
 
     user
     after(:build) do |submission, evaluator|
-      submission.orders << build(:library_order, assets: evaluator.assets, request_types: evaluator.request_types.map(&:id))
+      submission.orders << build(:library_order, assets: evaluator.assets, request_types_list: evaluator.request_types)
     end
   end
 end

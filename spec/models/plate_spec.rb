@@ -9,6 +9,8 @@ describe Plate do
   describe '#pools' do
     include_context 'a limber target plate with submissions'
 
+    let(:library_type) { target_submission.orders.first.request_options[:library_type] }
+
     before do
       target_plate.wells.each do |well|
         source_well = input_plate.wells.located_at(well.map_description).first
@@ -25,7 +27,7 @@ describe Plate do
           target_submission.uuid => {
             wells: ['A1', 'B1', 'C1'],
             insert_size: { from: 1, to: 20 },
-            library_type: { name: 'Standard' },
+            library_type: { name: library_type },
             request_type: library_request_type.key, pcr_cycles: nil,
             pool_complete: false,
             for_multiplexing: false
@@ -67,7 +69,7 @@ describe Plate do
             target_submission.uuid => {
               wells: ['A1', 'B1', 'C1'],
               insert_size: { from: 1, to: 20 },
-              library_type: { name: 'Standard' },
+              library_type: { name: library_type },
               request_type: library_request_type.key, pcr_cycles: nil,
               pool_complete: true,
               for_multiplexing: false
@@ -75,7 +77,7 @@ describe Plate do
             decoy_submission.uuid => {
               wells: ['A1', 'B1', 'C1'],
               insert_size: { from: 1, to: 20 },
-              library_type: { name: 'Standard' },
+              library_type: { name: library_type },
               request_type: library_request_type.key, pcr_cycles: nil,
               pool_complete: false,
               for_multiplexing: false

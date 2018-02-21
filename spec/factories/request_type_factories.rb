@@ -156,6 +156,6 @@ FactoryGirl.define do
   end
 
   factory :library_type do
-    name 'Standard'
+    sequence(:name) { |n| "LibraryType#{n}" }
   end
 end

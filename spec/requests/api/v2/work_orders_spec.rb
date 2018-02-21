@@ -4,8 +4,8 @@ require 'rails_helper'
 
 describe 'WorkOrders API', with: :api_v2 do
   context 'with multiple requests' do
-    let(:our_request_type) { create :request_type }
-    let(:other_request_type) { create :request_type }
+    let(:our_request_type) { create :library_request_type }
+    let(:other_request_type) { create :library_request_type }
     let(:our_work_order_type) { create :work_order_type, name: our_request_type.key }
     let(:other_work_order_type) { create :work_order_type, name: other_request_type.key }
     before do

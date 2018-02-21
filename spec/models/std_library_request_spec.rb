@@ -89,7 +89,10 @@ RSpec.describe IlluminaHtp::Requests::StdLibraryRequest, type: :model do
 
       context 'with a valid cycle' do
         let(:pcr_cycles) { 0 }
-        it('is valid') { expect(subject).to be_valid }
+        it 'is valid' do
+          binding.pry
+          expect(subject).to be_valid
+        end
       end
 
       context 'with an invalid cycle' do

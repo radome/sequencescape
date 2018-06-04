@@ -7,6 +7,8 @@ feature 'Create a study' do
 
   setup do
     create :faculty_sponsor, name: 'Jack Sponsor'
+    create :study_type, name: 'Not specified'
+    create :program, name: 'General'
     create :data_release_study_type, name: 'genomic sequencing'
   end
 
@@ -41,6 +43,7 @@ feature 'Create a study' do
     select('Open (ENA)', from: 'study_study_metadata_attributes_data_release_strategy')
     expect(page).not_to have_content('HMDMC approval number')
     click_button 'Create'
+    save_and_open_screenshot
     expect(page).to have_content('Your study has been created')
     study = Study.last
     expect(page).to have_current_path("/studies/#{study.id}/information")

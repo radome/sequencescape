@@ -10,6 +10,8 @@ RSpec.describe StudiesController do
   let(:study) { create :study }
   let(:reference_genome) { create :reference_genome }
   let(:data_release_study_type) { create :data_release_study_type, name: 'genomic sequencing' }
+  let(:faculty_sponsor) { create :faculty_sponsor }
+  let(:study_type) { create :study_type }
 
   setup do
     session[:user] = user.id
@@ -35,7 +37,7 @@ RSpec.describe StudiesController do
           'name' => 'hello',
           'reference_genome_id' => reference_genome.id,
           'study_metadata_attributes' => {
-            'faculty_sponsor_id' => FacultySponsor.create!(name: 'Me'),
+            'faculty_sponsor_id' => faculty_sponsor,
             'study_description' => 'some new study',
             'program_id' => program.id,
             'contains_human_dna' => 'No',
@@ -43,7 +45,7 @@ RSpec.describe StudiesController do
             'commercially_available' => 'No',
             'data_release_study_type_id' => data_release_study_type,
             'data_release_strategy' => 'open',
-            'study_type_id' => StudyType.find_by(name: 'Not specified').id
+            'study_type_id' => study_type
           }
         } }
       end

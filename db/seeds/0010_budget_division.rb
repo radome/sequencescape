@@ -1,6 +1,8 @@
 
-budget_divisions = ['Unallocated', 'Pathogen (including malaria)', 'Human variation']
+unless Rails.env.test?
+  budget_divisions = ['Unallocated', 'Pathogen (including malaria)', 'Human variation']
 
-budget_divisions.each do |name|
-  BudgetDivision.create!(name: name)
+  budget_divisions.each do |name|
+    BudgetDivision.create!(name: name)
+  end
 end

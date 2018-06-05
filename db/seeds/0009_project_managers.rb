@@ -1,2 +1,4 @@
 
-ProjectManager.create! name: 'Unallocated'
+unless Rails.env.test?
+  ProjectManager.create! name: 'Unallocated'
+end

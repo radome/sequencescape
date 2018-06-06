@@ -20,7 +20,8 @@ RSpec.describe Api::ProjectIO, type: :model do
         'external_funding_source' => nil,
         'budget_cost_centre' => nil,
         'funding_model' => 'Internal',
-        'project_manager' => 'Unallocated',
+        # The default ProjectManager 'Unallocated' was removed with the db seed
+        # 'project_manager' => 'Unallocated',
         'budget_division' => metadata.budget_division.name
       }
     end

@@ -24,6 +24,14 @@ describe BulkSubmission, with: :uploader do
 
   context 'a simple submission' do
     setup do
+      create(:cherrypick_request_type, key: 'cherrypick_for_pulldown', name: 'Cherrypicking for Pulldown')
+      create(:request_type, key: 'pulldown_wgs', name: 'Pulldown WGS', asset_type: 'Well')
+      create(:request_type, key: 'illumina_a_hiseq_paired_end_sequencing',
+        name: 'Illumina-A Paired end sequencing',
+        asset_type: 'LibraryTube',
+        order: 2,
+        request_class: SequencingRequest
+      )
       submission_template_hash = {
         name: 'Illumina-A - Cherrypick for pulldown - Pulldown WGS - HiSeq Paired end sequencing',
         submission_class_name: 'LinearSubmission',

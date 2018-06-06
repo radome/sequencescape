@@ -23,8 +23,9 @@ FactoryBot.define do
     end
 
     factory :cherrypick_request_type do
-      request_class CherrypickRequest
-      asset_type 'Well'
+      asset_type        'Well'
+      target_asset_type 'Well'
+      request_class     CherrypickForPulldownRequest
     end
 
     factory :well_request_type do

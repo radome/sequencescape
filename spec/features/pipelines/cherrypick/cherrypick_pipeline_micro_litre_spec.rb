@@ -7,8 +7,7 @@ feature 'cherrypick pipeline - micro litre', js: true do
   let(:user) { create :admin }
   let(:project) { create :project, name: 'Test project' }
   let(:study) { create :study }
-  let(:pipeline_name) { 'Cherrypick' }
-  let(:pipeline) { Pipeline.find_by(name: pipeline_name) }
+  let!(:pipeline) { create :cherrypick_pipeline, name: 'Cherrypick' }
   let(:plate1) { create  :plate_with_untagged_wells, sample_count: 2, barcode: '1' }
   let(:plate2) { create  :plate_with_untagged_wells, sample_count: 2, barcode: '10' }
   let(:plate3) { create  :plate_with_untagged_wells, sample_count: 2, barcode: '5' }
@@ -16,6 +15,8 @@ feature 'cherrypick pipeline - micro litre', js: true do
   let(:barcode) { 99999 }
   let(:robot) { create :robot, barcode: '444' }
   let!(:plate_template) { create :plate_template }
+
+  setup { create :plate_purpose, name: 'Infinium 670k', cherrypickable_target: true }
 
   before(:each) do
     assets = plates.each_with_object([]) do |plate, assets|

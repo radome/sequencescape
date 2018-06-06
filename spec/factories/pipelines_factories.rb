@@ -86,10 +86,13 @@ FactoryBot.define do
     externally_managed false
     min_size 1
 
-    association(:workflow, factory: :lab_workflow_for_pipeline, item_limit: 3000)
+    association(:workflow, factory: :cherrypick_workflow, item_limit: 3000)
 
     after(:build) do |pipeline|
-      pipeline.request_types << build(:well_request_type)
+      pipeline.request_types << create(:cherrypick_request_type,
+                                       name: 'Cherrypick',
+                                       key: 'cherrypick',
+                                       order: 2)
       pipeline.add_control_request_type
       pipeline.build_workflow(name: pipeline.name, item_limit: 3000, locale: 'Internal', pipeline: pipeline) if pipeline.workflow.nil?
     end
@@ -209,6 +212,22 @@ FactoryBot.define do
     name                  { |_a| FactoryBot.generate :lab_workflow_name }
     item_limit            2
     locale                'Internal'
+  end
+
+  factory :cherrypick_workflow, class: Workflow do
+    name 'Cherrypick'
+    after(:build) do |workflow|
+      create(:cherrypick_task, name: 'Select Plate Template',
+              workflow: workflow,
+              sti_type: 'PlateTemplateTask',
+              sorted: 1
+            )
+      create(:cherrypick_task, name: 'Approve Plate Layout',
+             workflow: workflow,
+             sti_type: 'CherrypickTask',
+             sorted: 2
+            )
+    end
   end
 
   factory :batch_request do
@@ -351,13 +370,14 @@ FactoryBot.define do
     purpose_id { create(:plate_purpose).id }
   end
 
-  factory :cherrypick_task do |_t|
+  factory :cherrypick_task do
     name 'New task'
     pipeline_workflow_id { |workflow| workflow.association(:lab_workflow) }
     sorted                nil
     location              ''
-    batched               nil
+    batched               true
     interactive           nil
+    lab_activity          true
   end
 
   factory :barcode_prefix do

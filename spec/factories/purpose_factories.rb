@@ -64,7 +64,7 @@ FactoryBot.define do
     end
 
     factory :library_tube_purpose do
-      target_type 'SampleTube'
+      target_type 'LibraryTube'
     end
 
     factory :mx_tube_purpose do

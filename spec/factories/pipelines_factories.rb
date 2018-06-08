@@ -98,6 +98,44 @@ FactoryBot.define do
     end
   end
 
+  factory :cherrypick_for_fluidigm_pipeline, class: CherrypickPipeline do
+    name            { generate :pipeline_name }
+    active          true
+    group_by_parent true
+    asset_type      'Well'
+    max_size        192
+    summary         false
+    sorter          11
+    paginate        false
+    group_name      'Sample Logistics'
+    group_by_study_to_delete true
+    externally_managed false
+    min_size 1
+
+    association(:workflow, factory: :cherrypick_for_fluidigm_workflow, item_limit: 192)
+
+    after(:build) do |pipeline|
+      pipeline.request_types << create(:pick_to_sta_request_type,
+                                       name: 'Pick to STA',
+                                       key: 'pick_to_sta',
+                                       order: 1)
+      pipeline.request_types << create(:pick_to_sta2_request_type,
+                                       name: 'Pick to STA2',
+                                       key: 'pick_to_sta2',
+                                       order: 2)
+      pipeline.request_types << create(:pick_to_fluidigm_request_type,
+                                       name: 'Pick to Fluidigm',
+                                       key: 'pick_to_fluidigm',
+                                       order: 3)
+      pipeline.request_types << create(:pick_to_snp_request_type,
+                                       name: 'Pick to SNP Type',
+                                       key: 'pick_to_snp_type',
+                                       order: 3)
+      pipeline.add_control_request_type
+      pipeline.build_workflow(name: pipeline.name, item_limit: 192, locale: 'Internal', pipeline: pipeline) if pipeline.workflow.nil?
+    end
+  end
+
   factory :sequencing_pipeline do
     name                  { FactoryBot.generate :pipeline_name }
     automated             false
@@ -185,15 +223,6 @@ FactoryBot.define do
     end
   end
 
-  factory :task do
-    name        'New task'
-    association(:workflow, factory: :lab_workflow)
-    sorted      nil
-    batched     nil
-    location    ''
-    interactive nil
-  end
-
   factory :pipeline_admin, class: User do
     login         'ad1'
     email         { |a| "#{a.login}@example.com".downcase }
@@ -217,14 +246,26 @@ FactoryBot.define do
   factory :cherrypick_workflow, class: Workflow do
     name 'Cherrypick'
     after(:build) do |workflow|
-      create(:cherrypick_task, name: 'Select Plate Template',
+      create(:plate_template_task, name: 'Select Plate Template',
               workflow: workflow,
-              sti_type: 'PlateTemplateTask',
               sorted: 1
             )
       create(:cherrypick_task, name: 'Approve Plate Layout',
              workflow: workflow,
-             sti_type: 'CherrypickTask',
+             sorted: 2
+            )
+    end
+  end
+
+  factory :cherrypick_for_fluidigm_workflow, class: Workflow do
+    name 'Cherrypick for Fluidigm'
+    after(:build) do |workflow|
+      create(:fluidigm_template_task, name: 'Select Plate Template',
+              workflow: workflow,
+              sorted: 1
+            )
+      create(:cherrypick_task, name: 'Approve Plate Layout',
+             workflow: workflow,
              sorted: 2
             )
     end
@@ -368,16 +409,6 @@ FactoryBot.define do
 
   factory :plate_transfer_task do
     purpose_id { create(:plate_purpose).id }
-  end
-
-  factory :cherrypick_task do
-    name 'New task'
-    pipeline_workflow_id { |workflow| workflow.association(:lab_workflow) }
-    sorted                nil
-    location              ''
-    batched               true
-    interactive           nil
-    lab_activity          true
   end
 
   factory :barcode_prefix do

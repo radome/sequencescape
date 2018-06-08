@@ -26,7 +26,35 @@ FactoryBot.define do
       asset_type        'Well'
       target_asset_type 'Well'
       request_class     CherrypickForPulldownRequest
+
+      factory :pick_to_sta_request_type do
+        after(:build) do |rt|
+          rt.acceptable_plate_purposes << create(:dilution_plate_purpose,
+                                                 name: 'Working Dilution')
+        end
+      end
+
+      factory :pick_to_sta2_request_type do
+        after(:build) do |rt|
+          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'STA')
+        end
+      end
+
+      factory :pick_to_snp_request_type do
+        after(:build) do |rt|
+          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'SNP Type')
+        end
+      end
+
+      factory :pick_to_fluidigm_request_type do
+        request_class CherrypickForFluidigmRequest
+
+        after(:build) do |rt|
+          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'STA2')
+        end
+      end
     end
+
 
     factory :well_request_type do
       asset_type 'Well'

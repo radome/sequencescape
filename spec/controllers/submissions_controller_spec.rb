@@ -28,6 +28,7 @@ RSpec.describe SubmissionsController, type: :controller do
       @plate.save
       @study = create :study, name: 'A study'
       @project = create :project, name: 'A project'
+      create :cherrypick_request_type, name: 'Cherrypicking for Pulldown', key: 'cherrypick_for_pulldown'
       submission_template_hash = { name: 'Cherrypicking for Pulldown',
                                    submission_class_name: 'LinearSubmission',
                                    product_catalogue: 'Generic',

@@ -124,7 +124,7 @@ RSpec.describe QcReport, type: :model do
     let(:plate_purposes)  { ['ISC lib PCR-XP', 'Lib PCR-XP', 'PF Post Shear'] }
 
     before(:each) do
-      create(:well_for_qc_report, study: study, plate: create(:plate, plate_purpose: PlatePurpose.find_by(name: 'ISC lib PCR-XP')))
+      create(:well_for_qc_report, study: study, plate: create(:plate, plate_purpose: create(:plate_purpose, name: 'ISC lib PCR-XP')))
       create(:well_for_qc_report, study: study, plate: create(:plate, plate_purpose: create(:plate_purpose, name: 'Lib PCR-XP')))
       create(:well_for_qc_report, study: study, plate: create(:plate, plate_purpose: create(:plate_purpose, name: 'PF Post Shear')))
 

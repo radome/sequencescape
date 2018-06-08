@@ -7,8 +7,7 @@ feature 'cherrypick for fluidigm pipeline - micro litre', js: true do
   let(:user) { create :admin }
   let(:project) { create :project, name: 'Test project' }
   let(:study) { create :study }
-  let(:pipeline_name) { 'Cherrypick for Fluidigm' }
-  let(:pipeline) { Pipeline.find_by(name: pipeline_name) }
+  let!(:pipeline) { create :cherrypick_for_fluidigm_pipeline, name: 'Cherrypick for Fluidigm' }
   let(:plate1) { create :plate_with_untagged_wells, sample_count: 2, barcode: '1' }
   let(:plate2) { create :plate_with_untagged_wells, sample_count: 2, barcode: '10' }
   let(:plate3) { create :plate_with_untagged_wells, sample_count: 2, barcode: '5' }
@@ -17,6 +16,7 @@ feature 'cherrypick for fluidigm pipeline - micro litre', js: true do
   let(:robot) { create :robot, barcode: '444' }
   let!(:plate_template) { create :plate_template }
   let(:request_types) { pipeline.request_types.map(&:key) }
+  let(:plate_purpose) { create :plate_purpose, name: 'Fluidigm 96-96' }
 
   before(:each) do
     assets = plates.each_with_object([]) do |plate, assets|
@@ -40,7 +40,7 @@ feature 'cherrypick for fluidigm pipeline - micro litre', js: true do
       project: project,
       user: user,
       assets: assets,
-      request_options: { target_purpose_name: 'Fluidigm 96-96' }
+      request_options: { target_purpose_name: plate_purpose.name }
     )
     Delayed::Worker.new.work_off
 
@@ -48,7 +48,6 @@ feature 'cherrypick for fluidigm pipeline - micro litre', js: true do
       headers: { 'Content-Type' => 'text/xml' },
       body: "<plate_barcode><id>42</id><name>Barcode #{barcode}</name><barcode>#{barcode}</barcode></plate_barcode>"
     )
-
     robot.robot_properties.create(key: 'max_plates', value: '21')
     robot.robot_properties.create(key: 'SCRC1', value: '1')
     robot.robot_properties.create(key: 'SCRC2', value: '2')

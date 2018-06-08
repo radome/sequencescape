@@ -47,6 +47,12 @@ FactoryBot.define do
         stock_plate true
       end
     end
+
+    factory :fluidigm_purpose do
+      cherrypickable_target true
+      cherrypick_direction  'interlaced_column'
+      asset_shape           { AssetShape.find_by(name: 'Fluidigm96') }
+    end
   end
 
   factory :dilution_plate_purpose do

@@ -74,7 +74,13 @@ module SubmissionSerializer
       sp[:request_options][:initial_state] = new_initial
     end
 
-    sp[:request_type_ids_list] = ensp[:request_types].map { |rtk| [RequestType.find_by!(key: rtk).id] }
+    sp[:request_type_ids_list] = ensp[:request_types].map do |rtk|
+      begin
+        [RequestType.find_by!(key: rtk).id]
+      rescue ActiveRecord::RecordNotFound
+        binding.pry
+      end
+    end
     sp[:order_role_id] = OrderRole.find_or_create_by(role: ensp[:order_role]).id if ensp[:order_role]
 
     SubmissionTemplate.create!(st)

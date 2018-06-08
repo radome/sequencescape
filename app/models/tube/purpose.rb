@@ -28,16 +28,49 @@ class Tube::Purpose < ::Purpose
     nil
   end
 
-  # Define some simple helper methods
-  class << self
-    ['Stock', 'Standard'].each do |purpose_type|
-      ['sample', 'library', 'MX'].each do |tube_type|
-        name = "#{purpose_type} #{tube_type}"
-        define_method("#{name.downcase.tr(' ', '_')}_tube") do
-          find_by(name: name) or raise "Cannot find #{name} tube"
-        end
-      end
-    end
+  def self.standard_library_tube
+    name = 'Standard library'
+    create_with(
+      name: name,
+      target_type: 'LibraryTube',
+      prefix: 'NT'
+    ).find_or_create_by(name: name)
+  end
+
+  def self.standard_sample_tube
+    name = 'Standard sample'
+    create_with(
+      name: name,
+      target_type: 'SampleTube',
+      prefix: 'NT'
+    ).find_or_create_by(name: name)
+  end
+
+  def self.standard_mx_tube
+    name = 'Standard MX'
+    Tube::StandardMx.create_with(
+      name: name,
+      target_type: 'MultiplexedLibraryTube',
+      prefix: 'NT'
+    ).find_or_create_by(name: name)
+  end
+
+  def self.stock_library_tube
+    name = 'Stock library'
+    create_with(
+      name: name,
+      target_type: 'StockLibraryTube',
+      prefix: 'NT'
+    ).find_or_create_by(name: name)
+  end
+
+  def self.stock_mx_tube
+    name = 'Stock MX'
+    Tube::StockMx.create_with(
+      name: name,
+      target_type: 'StockMultiplexedLibraryTube',
+      prefix: 'NT'
+    ).find_or_create_by(name: name)
   end
 
   private

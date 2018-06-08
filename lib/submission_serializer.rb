@@ -78,7 +78,7 @@ module SubmissionSerializer
       begin
         [RequestType.find_by!(key: rtk).id]
       rescue ActiveRecord::RecordNotFound
-        binding.pry
+        # binding.pry
       end
     end
     sp[:order_role_id] = OrderRole.find_or_create_by(role: ensp[:order_role]).id if ensp[:order_role]

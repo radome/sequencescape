@@ -230,45 +230,45 @@ FactoryBot.define do
   end
 
   factory :workflow, aliases: [:lab_workflow] do
-    name                  { FactoryBot.generate :lab_workflow_name }
+    name                  { generate :lab_workflow_name }
     item_limit            2
     locale                'Internal'
     # Bit grim. Otherwise pipeline behaves a little weird and tries to build a second workflow.
     pipeline { |workflow| workflow.association(:pipeline, workflow: workflow.instance_variable_get('@instance')) }
+
+    factory :cherrypick_workflow do
+      sequence(:name) { |n| "Cherrypick Workflow #{n}" }
+      after(:build) do |workflow|
+        create(:plate_template_task, name: 'Select Plate Template',
+                workflow: workflow,
+                sorted: 1
+              )
+        create(:cherrypick_task, name: 'Approve Plate Layout',
+               workflow: workflow,
+               sorted: 2
+              )
+      end
+    end
+
+    factory :cherrypick_for_fluidigm_workflow do
+      sequence(:name) { |n| "Cherrypick for Fluidigm Workflow #{n}" }
+      after(:build) do |workflow|
+        create(:fluidigm_template_task, name: 'Select Plate Template',
+                workflow: workflow,
+                sorted: 1
+              )
+        create(:cherrypick_task, name: 'Approve Plate Layout',
+               workflow: workflow,
+               sorted: 2
+              )
+      end
+    end
   end
 
   factory :lab_workflow_for_pipeline, class: Workflow do
-    name                  { |_a| FactoryBot.generate :lab_workflow_name }
+    name                  { generate :lab_workflow_name }
     item_limit            2
     locale                'Internal'
-  end
-
-  factory :cherrypick_workflow, class: Workflow do
-    name 'Cherrypick'
-    after(:build) do |workflow|
-      create(:plate_template_task, name: 'Select Plate Template',
-              workflow: workflow,
-              sorted: 1
-            )
-      create(:cherrypick_task, name: 'Approve Plate Layout',
-             workflow: workflow,
-             sorted: 2
-            )
-    end
-  end
-
-  factory :cherrypick_for_fluidigm_workflow, class: Workflow do
-    name 'Cherrypick for Fluidigm'
-    after(:build) do |workflow|
-      create(:fluidigm_template_task, name: 'Select Plate Template',
-              workflow: workflow,
-              sorted: 1
-            )
-      create(:cherrypick_task, name: 'Approve Plate Layout',
-             workflow: workflow,
-             sorted: 2
-            )
-    end
   end
 
   factory :batch_request do

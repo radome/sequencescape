@@ -57,7 +57,7 @@ FactoryBot.define do
 
   factory :dilution_plate_purpose do
     prefix 'DN'
-    name 'Dilution'
+    sequence(:name) { |n| "Dilution #{n}" }
   end
 
   factory :tube_purpose, class: Tube::Purpose do

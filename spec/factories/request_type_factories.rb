@@ -29,20 +29,19 @@ FactoryBot.define do
 
       factory :pick_to_sta_request_type do
         after(:build) do |rt|
-          rt.acceptable_plate_purposes << create(:dilution_plate_purpose,
-                                                 name: 'Working Dilution')
+          rt.acceptable_plate_purposes << create(:dilution_plate_purpose)
         end
       end
 
       factory :pick_to_sta2_request_type do
         after(:build) do |rt|
-          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'STA')
+          rt.acceptable_plate_purposes << create(:plate_purpose)
         end
       end
 
       factory :pick_to_snp_request_type do
         after(:build) do |rt|
-          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'SNP Type')
+          rt.acceptable_plate_purposes << create(:plate_purpose)
         end
       end
 
@@ -50,7 +49,7 @@ FactoryBot.define do
         request_class CherrypickForFluidigmRequest
 
         after(:build) do |rt|
-          rt.acceptable_plate_purposes << create(:plate_purpose, name: 'STA2')
+          rt.acceptable_plate_purposes << create(:plate_purpose)
         end
       end
     end

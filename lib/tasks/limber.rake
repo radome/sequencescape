@@ -28,8 +28,8 @@ namespace :limber do
                 { name: 'GBS Stock',
                   size: 384 },
                 # GnT Pipeline requires UAT
-                # { name: 'GnT Stock',
-                #   size: 96 }
+                { name: 'GnT Stock',
+                  size: 96 }
                 ]
 
     purposes.each do |purpose|
@@ -136,10 +136,10 @@ namespace :limber do
       Limber::Helper::RequestTypeConstructor.new(
         'scRNA',
         library_types: ['scRNA',
-                       # 'GnT scRNA'  # Wating for UAT
+                        'GnT scRNA'  # Wating for UAT
                        ],
-        default_purposes: ['scRNA Stock'
-                          # 'GnT Stock'  # Wating for UAT
+        default_purposes: ['scRNA Stock',
+                           'GnT Stock'  # Wating for UAT
                           ]
       ).build!
 
@@ -150,17 +150,17 @@ namespace :limber do
       ).build!
 
       # GnT Pipeline requires UAT
-      # Limber::Helper::RequestTypeConstructor.new(
-      #   'GnT Picoplex',
-      #   library_types: ['GnT Picoplex'],
-      #   default_purposes: ['GnT Stock']
-      # ).build!
+      Limber::Helper::RequestTypeConstructor.new(
+        'GnT Picoplex',
+        library_types: ['GnT Picoplex'],
+        default_purposes: ['GnT Stock']
+      ).build!
 
-      # Limber::Helper::RequestTypeConstructor.new(
-      #   'GnT MDA',
-      #   library_types: ['GnT MDA'],
-      #   default_purposes: ['GnT Stock']
-      # ).build!
+      Limber::Helper::RequestTypeConstructor.new(
+        'GnT MDA',
+        library_types: ['GnT MDA'],
+        default_purposes: ['GnT Stock']
+      ).build!
 
       unless RequestType.where(key: 'limber_multiplexing').exists?
         RequestType.create!(
@@ -239,15 +239,11 @@ namespace :limber do
       'PCR Free' => {
         sequencing_list: base_with_novaseq,
         catalogue_name: 'PFHSqX'
-      }
+      },
       # GnT pipeline requires UAT
-      # 'GnT Picoplex' => {
-      #   sequencing_list: base_without_hiseq
-      # },
-      # # Use Limber::Helper::LibraryOnlyTemplateConstructor for this one.
-      # 'GnT MDA' => {
-      #   sequencing_list: ['illumina_b_hiseq_x_paired_end_sequencing']
-      # }
+      'GnT Picoplex' => {
+        sequencing_list: base_without_hiseq
+      }
     }
 
     ActiveRecord::Base.transaction do
@@ -262,6 +258,8 @@ namespace :limber do
 
       lcbm_catalogue = ProductCatalogue.create_with(selection_behaviour: 'SingleProduct').find_or_create_by!(name: 'LCMB')
       Limber::Helper::LibraryOnlyTemplateConstructor.new(prefix: 'LCMB', catalogue: lcbm_catalogue).build!
+      mda_catalogue = ProductCatalogue.create_with(selection_behaviour: 'SingleProduct').find_or_create_by!(name: 'GnT MDA')
+      Limber::Helper::LibraryOnlyTemplateConstructor.new(prefix: 'GnT MDA', catalogue: mda_catalogue).build!
       gbs_catalogue = ProductCatalogue.create_with(selection_behaviour: 'SingleProduct').find_or_create_by!(name: 'GBS')
       Limber::Helper::LibraryOnlyTemplateConstructor.new(prefix: 'GBS', catalogue: gbs_catalogue).build!
       catalogue = ProductCatalogue.create_with(selection_behaviour: 'SingleProduct').find_or_create_by!(name: 'Generic')

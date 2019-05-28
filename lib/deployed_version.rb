@@ -74,7 +74,7 @@ module Deployed
     end
 
     def version(rank)
-      version_hash ? version_hash[rank] : 0
+      version_hash ? version_hash[rank] : '0'
     end
 
     def execute_command(cmd)
@@ -113,7 +113,7 @@ module Deployed
 
   require 'ostruct'
   DETAILS = OpenStruct.new(
-    name: APP_NAME,
+    name: nil,
     version: VERSION_ID,
     environment: ENVIRONMENT
   )

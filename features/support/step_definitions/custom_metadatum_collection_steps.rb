@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Given /^a custom metadatum collection exists with ID (\d+)$/ do |id|
   metadata = [FactoryBot.build(:custom_metadatum, key: 'Key1', value: 'Value1'),
               FactoryBot.build(:custom_metadatum, key: 'Key2', value: 'Value2')]
@@ -11,7 +13,7 @@ Given(/^the UUID for the custom metadatum collection with ID (\d+) is "(.*?)"$/)
   set_uuid_for(collection.user, '00000000-1111-2222-3333-444444444446')
 end
 
-Given(/^the asset and the user exist and have UUID$/) do
-  set_uuid_for(FactoryBot.create(:asset), '00000000-1111-2222-3333-444444444445')
+Given(/^the labware and the user exist and have UUID$/) do
+  set_uuid_for(FactoryBot.create(:labware), '00000000-1111-2222-3333-444444444445')
   set_uuid_for(FactoryBot.create(:user), '00000000-1111-2222-3333-444444444446')
 end

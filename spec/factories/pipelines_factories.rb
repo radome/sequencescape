@@ -91,8 +91,6 @@ FactoryBot.define do
     name            { generate :pipeline_name }
     automated       { false }
     active          { true }
-    group_by_parent { true }
-    asset_type      { 'Well' }
     max_size        { 3000 }
     summary         { true }
     externally_managed { false }
@@ -108,8 +106,6 @@ FactoryBot.define do
   factory :fluidigm_pipeline, class: CherrypickPipeline do
     name                    { generate :pipeline_name }
     active                  { true }
-    group_by_parent         { true }
-    asset_type              { 'Well' }
     max_size                { 192 }
     sorter                  { 11 }
     paginate                { false }
@@ -152,20 +148,6 @@ FactoryBot.define do
     end
   end
 
-  factory :qc_pipeline do
-    name                  { |_a| FactoryBot.generate :pipeline_name }
-    automated             { false }
-    active                { true }
-    next_pipeline_id      { nil }
-    previous_pipeline_id  { nil }
-
-    after(:build) do |pipeline|
-      pipeline.request_types << create(:request_type)
-      pipeline.add_control_request_type
-      pipeline.build_workflow(name: pipeline.name, locale: 'Internal', pipeline: pipeline)
-    end
-  end
-
   factory :library_creation_pipeline do
     name                  { |_a| FactoryBot.generate :pipeline_name }
     automated             { false }
@@ -182,7 +164,6 @@ FactoryBot.define do
 
   factory :multiplexed_library_creation_pipeline do
     name { |_a| FactoryBot.generate :pipeline_name }
-    asset_type { 'LibraryTube' }
     automated             { false }
     active                { true }
 
@@ -209,20 +190,6 @@ FactoryBot.define do
       request.request_metadata.fragment_size_required_from = 300
       request.request_metadata.fragment_size_required_to   = 500
       request.request_metadata.library_type                = create(:library_type)
-    end
-  end
-
-  factory :pulldown_library_creation_pipeline do
-    name                  { |_a| FactoryBot.generate :pipeline_name }
-    automated             { false }
-    active                { true }
-    next_pipeline_id      { nil }
-    previous_pipeline_id  { nil }
-
-    after(:build) do |pipeline|
-      pipeline.request_types << create(:request_type)
-      pipeline.add_control_request_type
-      pipeline.build_workflow(name: pipeline.name, locale: 'Internal', pipeline: pipeline)
     end
   end
 

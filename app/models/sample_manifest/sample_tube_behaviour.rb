@@ -42,7 +42,11 @@ module SampleManifest::SampleTubeBehaviour
     end
 
     def acceptable_purposes
-      [Tube::Purpose.standard_sample_tube, Tube::Purpose.find_by(name: 'saphyr')]
+      Tube::Purpose.where(target_type: SampleTube)
+    end
+
+    def default_purpose
+      Tube::Purpose.standard_sample_tube
     end
 
     def updated_by!(user, samples)
@@ -63,7 +67,7 @@ module SampleManifest::SampleTubeBehaviour
     end
 
     def labware_from_samples
-      samples.map { |sample| sample.assets.first }
+      samples.map { |s| s.primary_receptacle.labware }
     end
 
     def labware=(labware)
@@ -71,7 +75,7 @@ module SampleManifest::SampleTubeBehaviour
     end
 
     def labware
-      tubes | labware_from_samples | @manifest.assets
+      tubes | labware_from_samples | @manifest.assets.map(&:labware)
     end
     alias printables labware
 

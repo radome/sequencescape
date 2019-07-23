@@ -5,10 +5,13 @@
 # but for multiplexed requests it usually helps define which assets will get
 # pooled together at multiplexing. There are two Order subclasses which are important
 # when it comes to submissions:
-# LinearSubmission => Most orders fall in this category. If the submission is multiplexed
+#
+# {LinearSubmission}: Most orders fall in this category. If the submission is multiplexed
 #                     results in a single pool for the whole submissions.
-# FlexibleSubmission => Allows request types to specify their own pooling rules, which are
+#
+# {FlexibleSubmission}: Allows request types to specify their own pooling rules, which are
 #                       used to define pools at the submission level.
+#
 # While orders are mostly in charge of building their own requests, Submissions trigger this
 # behaviour, and handle multiplexing between orders.
 class Submission < ApplicationRecord
@@ -123,9 +126,9 @@ class Submission < ApplicationRecord
   # Attempts to find the multiplexed asset (usually a multiplexed library tube) associated
   # with the submission. Useful when trying to pool requests into a pre-existing tube at the
   # end of the process.
-  def multiplexed_asset
+  def multiplexed_labware
     # All our multiplexed requests end up in a single asset, so we don't care which one we find.
-    requests.joins(:request_type).find_by(request_types: { for_multiplexing: true }).target_asset
+    requests.joins(:request_type).find_by(request_types: { for_multiplexing: true })&.target_labware
   end
 
   def each_submission_warning

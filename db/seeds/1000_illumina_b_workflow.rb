@@ -1,6 +1,4 @@
-# rubocop:disable Metrics/BlockLength
-# TODO: This should probably still get refactored, but disabling this here allows us to drastically reduce the
-# maximum block size in the todo yaml.
+# frozen_string_literal: true
 
 ActiveRecord::Base.transaction do
   pipeline_name = 'Illumina-B STD'
@@ -50,7 +48,7 @@ ActiveRecord::Base.transaction do
       for_multiplexing: true,
       no_target_asset: false,
       target_purpose: Purpose.find_by!(name: 'Lib Pool SS-XP-Norm')
-    },
+    }
   ].each do |request_type_options|
     RequestType.create!(shared_options_b.merge(request_type_options))
   end
@@ -204,19 +202,6 @@ ActiveRecord::Base.transaction do
     rt.acceptable_plate_purposes << Purpose.find_by!(name: 'PF Cherrypicked')
   end
 
-  RequestType.create!(
-    name: 'Illumina-HTP Strip Tube Creation',
-    key: 'illumina_htp_strip_tube_creation',
-    asset_type: 'Well',
-    order: 2,
-    initial_state: 'pending',
-    multiples_allowed: true,
-    request_class_name: 'StripCreationRequest',
-    for_multiplexing: false,
-    billable: false,
-    product_line: ProductLine.find_by!(name: 'Illumina-B')
-  )
-
   RequestType.find_by!(key: 'illumina_b_hiseq_x_paired_end_sequencing').acceptable_plate_purposes << PlatePurpose.create!(
     name: 'Strip Tube Purpose',
     target_type: 'StripTube',
@@ -225,46 +210,6 @@ ActiveRecord::Base.transaction do
     barcode_printer_type: BarcodePrinterType.find_by(name: '96 Well Plate'),
     cherrypick_direction: 'column',
     size: 8,
-    asset_shape: AssetShape.find_by(name: 'StripTubeColumn'),
-    barcode_for_tecan: 'ean13_barcode'
+    asset_shape: AssetShape.find_by(name: 'StripTubeColumn')
   )
 end
-
-StripTubeCreationPipeline.create!(
-  name: 'Strip Tube Creation',
-  automated: false,
-  active: true,
-  group_by_parent: true,
-  sorter: 8,
-  paginate: false,
-  max_size: 96,
-  min_size: 8,
-  summary: true,
-  externally_managed: false,
-  control_request_type_id: 0,
-  group_name: 'Sequencing'
-) do |pipeline|
-  pipeline.request_types << RequestType.find_by!(key: 'illumina_htp_strip_tube_creation')
-  pipeline.workflow = Workflow.create!(name: 'Strip Tube Creation').tap do |workflow|
-    stct = StripTubeCreationTask.create!(
-      name: 'Strip Tube Creation',
-      workflow: workflow,
-      sorted: 1,
-      interactive: true,
-      lab_activity: true
-    )
-    stct.descriptors.create!(
-      name: 'Strips to create',
-      selection: [1, 2, 4, 6, 12],
-      kind: 'Selection',
-      key: 'strips_to_create'
-    )
-    stct.descriptors.create!(
-      name: 'Strip Tube Purpose',
-      value: 'Strip Tube Purpose',
-      key: 'strip_tube_purpose'
-    )
-  end
-end
-
-# rubocop:enable Metrics/BlockLength

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'pipelines_controller'
 
@@ -56,15 +58,6 @@ class PipelinesControllerTest < ActionController::TestCase
 
         should respond_with :success
       end
-    end
-
-    context '#setup_inbox' do
-      setup do
-        @pipeline = FactoryBot.create :pipeline
-        get :setup_inbox, params: { id: @pipeline.id.to_s }
-      end
-
-      should respond_with :success
     end
 
     context '#activate' do

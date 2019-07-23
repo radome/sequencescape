@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class BatchTest < ActiveSupport::TestCase
@@ -11,19 +13,6 @@ class BatchTest < ActiveSupport::TestCase
         assert_equal @batch.state, 'started'
         assert_equal @batch.started?, true
       end
-    end
-  end
-
-  context 'Batch#add_control' do
-    setup do
-      @batchrequest_count = BatchRequest.count
-      @control = create :control
-      @batch = create :batch
-      @batch.add_control(@control.name, 2)
-    end
-
-    should 'change BatchRequest.count by 2' do
-      assert_equal 2, BatchRequest.count - @batchrequest_count, 'Expected BatchRequest.count to change by 2'
     end
   end
 
@@ -227,28 +216,28 @@ class BatchTest < ActiveSupport::TestCase
 
     setup do
       @pipeline_next = create :pipeline, name: 'Next pipeline'
-      @pipeline      = create :pipeline, name: 'Pipeline for BatchTest', automated: false, next_pipeline_id: @pipeline_next.id, asset_type: 'LibraryTube'
+      @pipeline      = create :library_creation_pipeline, name: 'Pipeline for BatchTest', automated: false, next_pipeline_id: @pipeline_next.id
       @pipeline_qc = create :pipeline, name: 'quality control', automated: true, next_pipeline_id: @pipeline_next.id
     end
 
     context 'create requests' do
       setup do
         @requests = create_list(:request, 4, request_type: @pipeline.request_types.last, target_asset: nil)
-        @asset_count = Asset.count
+        @asset_count = Receptacle.count
         @batch = @pipeline.batches.create!(requests: @requests)
       end
 
       should 'create target assets for each request' do
         # This is dependent of some aspects of pipelines and request types.
         # Its all a bit convoluted and inconsistent.
-        assert_equal 4, Asset.count - @asset_count, 'Expected Asset.count to change by 4'
+        assert_equal 4, Receptacle.count - @asset_count, 'Expected Receptacle.count to change by 4'
         @requests.each do |r|
           assert r.reload.target_asset.present?, 'Request has no target asset'
         end
       end
 
       should 'not have same asset name' do
-        assert_not_equal Asset.first.name, Asset.last.name
+        assert_not_equal Labware.first.name, Labware.last.name
       end
 
       should 'create a batch_request for every associated request' do
@@ -439,6 +428,8 @@ class BatchTest < ActiveSupport::TestCase
       end
 
       should 'return true if self has item_limit' do
+        @pipeline.workflow.update!(item_limit: 4)
+        @batch.reload
         assert @batch.has_limit?
       end
 
@@ -509,7 +500,7 @@ class BatchTest < ActiveSupport::TestCase
           # Separate context because we need to setup the DB first and we cannot check the changes made.
           context 'checking DB changes' do
             setup do
-              @asset_count = Asset.count
+              @asset_count = Receptacle.count
               @batchrequest_count = BatchRequest.count
               @request_count = Request.count
               @batch_count = Batch.count
@@ -517,10 +508,10 @@ class BatchTest < ActiveSupport::TestCase
             end
 
             should 'remove the requests from the batch but not destroy them' do
-              assert_equal(-2,  BatchRequest.count - @batchrequest_count, 'Expected BatchRequest.count to change by -2')
-              assert_equal(-2,  Asset.count - @asset_count, 'Expected Asset.count to change by -2')
-              assert_equal 0,  Request.count - @request_count, 'Expected Request.count to change by 0'
-              assert_equal 0,  Batch.count - @batch_count, 'Expected Batch.count to change by 0'
+              assert_equal(-2, BatchRequest.count - @batchrequest_count, 'Expected BatchRequest.count to change by -2')
+              assert_equal(0, Receptacle.count - @asset_count, 'Expected Asset.count to not change')
+              assert_equal 0, Request.count - @request_count, 'Expected Request.count to change by 0'
+              assert_equal 0, Batch.count - @batch_count, 'Expected Batch.count to change by 0'
             end
 
             should 'transition to discarded' do
@@ -604,8 +595,8 @@ class BatchTest < ActiveSupport::TestCase
             @lib_prep_request.reload
           end
 
-          should 'remove the target asset from the request and remove the request from the batch' do
-            assert @lib_prep_request.target_asset.nil?
+          should 'leave the target asset from the request but remove the request from the batch' do
+            assert_equal @lib_prep_request.target_asset, @library_tube.receptacle
             assert @lib_prep_batch.requests.include?(@lib_prep_request)
           end
         end
@@ -615,8 +606,8 @@ class BatchTest < ActiveSupport::TestCase
             @pe_seq_request.reload
           end
 
-          should 'remove the asset from the request' do
-            assert @pe_seq_request.asset.nil?
+          should 'not remove the asset from the request' do
+            assert_equal @pe_seq_request.asset, @library_tube.receptacle
           end
         end
       end

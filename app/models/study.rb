@@ -1,5 +1,36 @@
 require 'aasm'
 
+# A Study is a collection of various {Sample samples} and the work done on them.
+# They are perhaps slightly overloaded, and provide:
+# - A means of grouping together samples for administrative purposes
+# - A means of generating EGAS/ERP study accession numbers at the ENA/EGA
+#   - @see Accessionable::Study
+#   - These accession numbers are used at data release to group samples together for publication
+#   - For managed/EGA studies, also ties the data to an {Accessionable::Dac} and {Accessionable::Policy}
+# - A means of generating the aforementioned {Accessionable::Dac} and {Accessionable::Policy}
+#   @note These should DEFINATELY be separate entities
+# - A means of tying data to internal data-release timings
+# - A means to apply internal data access policies to released sequencing data
+# - A means to tie interested parties to the samples and the work done on them
+# - A way of specifying common ways of filtering/processing generated data. eg. filter human sequence
+# - The service with which a {Sample} will be accessioned (eg. EGA/ENA)
+#
+# When a {Sample} enters Sequencescape it will usually be associated with a single {Study},
+# usually determined by the {Study} associated with the {SampleManifest}. This study
+# will be recorded on the {Aliquot} in the stock {Receptacle}, and additionally a
+# {StudySample} will record this association.
+#
+# When work is requested an {Order} will be created, specifying a list of {Receptacle receptacles}
+# and the {Study} for which this work is being performed. This will set
+# {Request#initial_study_id initial study id on request} and in turn will be recorded on any
+# downstream {Aliquot aliquots}. Critically, it is the study specified on the {Aliquot} in the {Lane}
+# which will influence processes like data release and data access.
+#
+# @note This is really quite convoluted, and couples together administrative organization
+#       alongside accessioning and data-access rules. It results in samples being tied to
+#       an EGAS/ERP far too early in their lifecycle, and as a result we often need to perform
+#       'sample moves'. Although we do need to know if samples are open(ENA) or managed(EGA) at the
+#       point of accessioning.
 class Study < ApplicationRecord
   # It has to be here, as there are has_many through: :roles associations in modules
   # Includes / Extendes
@@ -17,7 +48,6 @@ class Study < ApplicationRecord
   include ReferenceGenome::Associations
   include SampleManifest::Associations
   include Role::Authorized
-  include StudyRelation::Associations
 
   extend EventfulRecord
   extend Metadata
@@ -97,9 +127,9 @@ class Study < ApplicationRecord
   has_many :eager_items, ->() { includes(requests: :request_type) }, class_name: 'Item', through: :requests, source: :item
   has_many :aliquots
   has_many :initial_requests, class_name: 'Request', foreign_key: :initial_study_id
-  has_many :assets_through_aliquots,  ->() { distinct }, class_name: 'Asset', through: :aliquots, source: :receptacle
-  has_many :assets_through_requests,  ->() { distinct }, class_name: 'Asset', through: :initial_requests, source: :asset
-  has_many :requests, through: :assets_through_aliquots, source: :requests
+  has_many :assets_through_aliquots,  ->() { distinct }, through: :aliquots, source: :receptacle
+  has_many :assets_through_requests,  ->() { distinct }, through: :initial_requests, source: :asset
+  has_many :requests, through: :assets_through_aliquots, source: :requests_as_source
   has_many :request_types, ->() { distinct }, through: :requests
   has_many :items, ->() { distinct }, through: :requests
   has_many :projects, ->() { distinct }, through: :orders
@@ -257,7 +287,7 @@ class Study < ApplicationRecord
   scope :in_assets, ->(assets) {
     select('DISTINCT studies.*')
       .joins([
-        'LEFT JOIN aliquots ON aliquots.study_id = studies.id',
+        'LEFT JOIN aliquots ON aliquots.study_id = studies.id'
       ])
       .where(['aliquots.receptacle_id IN (?)', assets.map(&:id)])
   }

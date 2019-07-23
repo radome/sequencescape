@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'unit/tag_qc/qcable_statemachine_checks'
 
@@ -24,8 +26,7 @@ class QcableTest < ActiveSupport::TestCase
 
     context '#qcable' do
       setup do
-        @mock_purpose = mock('Purpose', default_state: 'created')
-        @mock_purpose.expects('create!').returns(Asset.new).once
+        @mock_purpose = build :tube_purpose, default_state: 'created'
         @mock_lot = create :lot
         @mock_lot.expects(:target_purpose).returns(@mock_purpose).twice
       end

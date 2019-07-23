@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Then /^I should see qc reports table:$/ do |expected_results_table|
   expected_results_table.diff!(table(fetch_table('table#study_list')))
 end
@@ -24,7 +26,8 @@ end
 Then /^the last report for "([^"]*)" should be:$/ do |study_name, expected_results_table|
   study  = Study.find_by(name: study_name) or raise StandardError, "Cannot find study #{study_name.inspect}"
   report = study.study_reports.last or raise StandardError, "Study #{study_name.inspect} has no study reports"
-  expected_results_table.diff!(CSV.parse(report.report.file.read))
+  report_contents = report.report.file.read
+  expected_results_table.diff!(CSV.parse(report_contents))
 end
 
 Given /^study "([^"]*)" has a plate "([^"]*)"$/ do |study_name, plate_barcode|
@@ -45,10 +48,6 @@ Given /^study "([^"]*)" has a plate "([^"]*)"$/ do |study_name, plate_barcode|
   end
   study = Study.find_by(name: study_name)
   RequestFactory.create_assets_requests(plate.wells, study)
-
-  samples[0].external_properties.create!(key: 'genotyping_done', value: 'DNAlab completed: 13')
-  samples[1].external_properties.create!(key: 'genotyping_done', value: 'Imported to Illumina: 123')
-  samples[2].external_properties.create!(key: 'genotyping_done', value: 'Imported to Illumina: 51| DNAlab completed: 17')
 end
 
 Given /^study "([^"]*)" has a plate "([^"]*)" to be volume checked$/ do |study_name, plate_barcode|

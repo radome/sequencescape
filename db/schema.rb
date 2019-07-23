@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190522154457) do
+ActiveRecord::Schema.define(version: 20190704131254) do
 
   create_table "aker_containers", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "barcode"
@@ -793,16 +793,12 @@ ActiveRecord::Schema.define(version: 20190522154457) do
     t.datetime "updated_at"
     t.integer "next_pipeline_id"
     t.integer "previous_pipeline_id"
-    t.boolean "group_by_parent"
-    t.string "asset_type", limit: 50
-    t.boolean "group_by_submission_to_delete"
     t.boolean "multiplexed"
     t.string "sti_type", limit: 50
     t.integer "sorter"
     t.boolean "paginate", default: false
     t.integer "max_size"
     t.boolean "summary", default: true
-    t.boolean "group_by_study_to_delete", default: true
     t.boolean "externally_managed", default: false
     t.string "group_name"
     t.integer "control_request_type_id", null: false
@@ -887,7 +883,6 @@ ActiveRecord::Schema.define(version: 20190522154457) do
     t.string "cherrypick_direction", default: "column", null: false
     t.integer "size", default: 96
     t.integer "asset_shape_id", default: 1, null: false
-    t.string "barcode_for_tecan", default: "ean13_barcode", null: false
     t.integer "source_purpose_id"
     t.integer "lifespan"
     t.integer "barcode_prefix_id"
@@ -1817,7 +1812,6 @@ ActiveRecord::Schema.define(version: 20190522154457) do
     t.string "sti_type"
     t.integer "source_id"
     t.integer "destination_id"
-    t.string "destination_type"
     t.text "transfers_hash"
     t.integer "bulk_transfer_id"
     t.integer "user_id"

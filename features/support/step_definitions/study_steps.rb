@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Given /^I have a study called "([^\"]*)"$/ do |study|
   FactoryBot.create :study, name: study, state: 'pending'
 end
@@ -253,12 +255,6 @@ end
 Given /^the study "([^\"]+)" has a valid dac$/ do |study_name|
   step('user "dac" exists')
   step(%Q{user "dac" is an "Data Access Contact" of study "#{study_name}"})
-end
-
-Given /^the study "([^\"]+)" is "([^\"]+)" of study "([^\"]+)"/ do |related_study_name, relation_name, study_name|
-  study = Study.find_by(name: study_name) or raise StandardError, "Cannot find study #{study_name.inspect}"
-  related_study = Study.find_by(name: related_study_name) or raise StandardError, "Cannot find related_study #{related_study_name.inspect}"
-  StudyRelationType::relate_studies_by_name!(relation_name, study, related_study)
 end
 
 Given /^a study named "([^\"]+)" exists for accession/ do |study_name|

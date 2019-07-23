@@ -3,13 +3,21 @@ class SequencingPipeline < Pipeline
   self.sequencing = true
   self.purpose_information = false
   self.inbox_eager_loading = :loaded_for_sequencing_inbox_display
+  self.generate_target_assets_on_batch_create = true
+  # This block is enabled when we have the labware table present as part of the AssetRefactor
+  # Ie. This is what will happen in future
+  AssetRefactor.when_refactored do
+    self.asset_type = 'Lane::Labware'
+  end
+
+  # This block is disabled when we have the labware table present as part of the AssetRefactor
+  # Ie. This is what will happens now
+  AssetRefactor.when_not_refactored do
+    self.asset_type = 'Lane'
+  end
 
   def request_actions
     [:remove]
-  end
-
-  def inbox_partial
-    group_by_parent? ? 'group_by_parent' : super
   end
 
   def is_read_length_consistent_for_batch?(batch)

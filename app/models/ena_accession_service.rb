@@ -10,9 +10,11 @@ class EnaAccessionService < AccessionService
     configatron.accession.ena!.to_hash
   end
 
-  def accession_login
-    configatron.ena_accession_login or raise "Can't find ENA accession login in configuration file"
-  end
+  # This method doesn't seem to be called anywhere. ENA accession should use
+  # `accession.ena.user` and `accession.ena.password`
+  # def accession_login
+  #   configatron.ena_accession_login or raise "Can't find ENA accession login in configuration file"
+  # end
 
   # Most uses of this feature have been human error, so its better to hold off on releasing data than accidentally releasing data
 

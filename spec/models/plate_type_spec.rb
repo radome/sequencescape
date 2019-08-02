@@ -14,9 +14,9 @@ describe PlateType do
   end
 
   it 'has name and maximum volume' do
-    expect(invalid_plate_type.valid?).to be false
+    expect(invalid_plate_type).to_not be_valid
     expect(invalid_plate_type.errors.messages.length).to eq 2
-    expect(plate_type.valid?).to be true
+    expect(plate_type).to be_valid
   end
 
   it 'knows cherrypickable default type' do

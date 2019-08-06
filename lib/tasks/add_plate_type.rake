@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :plate_types do
   desc 'Add Plate Types for bed verification (GPL-118)'
   task add: [:environment] do

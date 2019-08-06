@@ -1,6 +1,6 @@
 [logo]: https://github.com/sanger/sequencescape/raw/master/app/assets/images/sequencescape.gif
 
-[logo] Sequencescape
+![Sequencescape Logo][logo] Sequencescape
 =============
 [![Build Status](https://travis-ci.org/sanger/sequencescape.svg?branch=master)](https://travis-ci.org/sanger/sequencescape)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2e3913c21e32b86511e4/maintainability)](https://codeclimate.com/github/sanger/sequencescape/maintainability)
